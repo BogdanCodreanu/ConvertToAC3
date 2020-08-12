@@ -59,7 +59,7 @@ if ([string]::IsNullOrEmpty($OutputDirectory)) {
 foreach ($file in $files) {
     $filePath=($file.FullName)
 
-    Write-Output "* * *`nAnalyzing file: $newPath`n* * *"
+    Write-Output "* * *`nAnalyzing file: $filePath`n* * *"
 
     $newPath = [System.IO.Path]::GetFileNameWithoutExtension($filePath) + 
         "_AC3" + [System.IO.Path]::GetExtension($filePath)
@@ -69,7 +69,7 @@ foreach ($file in $files) {
     & ffprobe -i $filePath 2>ffProbestderr.txt
     $ffOutput = Get-Content ffProbestderr.txt
 
-    $regexData = [regex]::Match($ffOutput, '\bAudio: \b(?<audioType>[a-zA-Z0-9]{2,}), \b(?<bitrate>\d*)\b Hz')
+    $regexData = [regex]::Match($ffOutput, '\bAudio: \b(?<audioType>[a-zA-Z0-9]{2,})( [\(A-Za-z0-9\)]*)?, \b(?<bitrate>\d*)\b Hz')
 
     if ($regexData.Groups["audioType"].Length -eq 0) {
         Write-Output "Could not determine audio type. Converting it to AC3 anyway."
@@ -91,7 +91,7 @@ foreach ($file in $files) {
         Write-Output "Detected bitrate of: $bitrate."
     }
 
-    Remove-Item ffProbestderr.txt
+    # Remove-Item ffProbestderr.txt
 
     # convert audio with ffmpeg
     ffmpeg -i $filePath -c:v copy -c:a ac3 -b:a $bitrate $newPath
