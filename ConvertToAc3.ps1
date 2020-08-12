@@ -91,7 +91,7 @@ foreach ($file in $files) {
         Write-Output "Detected bitrate of: $bitrate."
     }
 
-    # Remove-Item ffProbestderr.txt
+    Remove-Item ffProbestderr.txt
 
     # convert audio with ffmpeg
     ffmpeg -i $filePath -c:v copy -c:a ac3 -b:a $bitrate $newPath
